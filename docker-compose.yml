@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  reactlessbuster:
+    build: .
+    container_name: reactlessbuster2
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    volumes:
+      # データベースの永続化
+      - ./db:/app/db
+      # ログの永続化
+      - ./logs:/app/logs
+      # 認証情報のマウント
+      - ./credentials:/app/credentials:ro
+    networks:
+      - bot-network
+    # メモリ制限を設定
+    mem_limit: 512m
+    # CPU制限を設定
+    cpus: 0.5
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  bot-network:
+    driver: bridge
