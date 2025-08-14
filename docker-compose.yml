@@ -2,22 +2,20 @@ version: '3.8'
 
 services:
   reactlessbuster:
-    build: .
+    build: ReactlessBuster2/
     container_name: reactlessbuster2
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
     env_file:
-      - .env
+      - ./ReactlessBuster2/.env
     volumes:
       # データベースの永続化
-      - ./db:/app/db
+      - ./ReactlessBuster2/db:/app/db
       # ログの永続化
-      - ./logs:/app/logs
+      - ./ReactlessBuster2/logs:/app/logs
       # 認証情報のマウント
-      - ./credentials:/app/credentials:ro
-    networks:
-      - bot-network
+      - ./ReactlessBuster2/credentials:/app/credentials:ro
     # メモリ制限を設定
     mem_limit: 512m
     # CPU制限を設定
@@ -28,7 +26,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-networks:
-  bot-network:
-    driver: bridge
