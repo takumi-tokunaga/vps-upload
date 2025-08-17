@@ -27,7 +27,6 @@ services:
         max-size: "10m"
         max-file: "3"
 
-
   neoforge-mc:
     image: itzg/minecraft-server
     container_name: neoforge-server
