@@ -40,7 +40,7 @@ services:
       - ./minecraft-data:/data
     restart: unless-stopped
 
-  mincraft_backuper:
+  minecraft_backuper:
     build: minecraft_backuper/
     container_name: minecraft_backuper
     restart: unless-stopped
