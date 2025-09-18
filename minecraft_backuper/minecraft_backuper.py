@@ -28,7 +28,7 @@ class LogHandler(FileSystemEventHandler):
                     print("Log file modified, checking for player activity...")
                     print(file)
                     lines = file.readlines()
-                    recent_lines = lines[-10:]
+                    recent_lines = lines[-20:]
                     print(self.log_file)
                     for line in recent_lines:
                         print(f"Checking line: {line.strip()}")
