@@ -62,6 +62,12 @@ class LogHandler(FileSystemEventHandler):
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
+
+# サーバーが起動してログファイルに内容が書き込まれるまで待機
+while not (os.path.exists(LOG_PATH) and os.path.getsize(LOG_PATH) > 0):
+    print("Waiting for server to start and log file to be written...")
+    time.sleep(2)
+
 print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
 observer.schedule(LogHandler(LOG_PATH), path=LOG_PATH, recursive=False)
