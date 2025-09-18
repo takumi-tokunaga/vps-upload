@@ -20,19 +20,19 @@ if not os.path.exists(BORG_REPO):
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         self.log_file = log_file_path
-        self.last_size = 0
 
     def on_modified(self, event):
         if event.src_path.endswith("latest.log"):
             try:
                 with open(self.log_file, 'r') as file:
                     print("Log file modified, checking for player activity...")
+                    print(event.src_path, self.log_file)
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
                         print(f"Checking line: {line.strip()}")
                         if "joined the game" in line or "left the game" in line:
-                            print(f"Detected player activity: {line.strip()}")
+                            print("Detected player activity")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
                             player_name = line.split(" ")[-3]
@@ -43,7 +43,7 @@ class LogHandler(FileSystemEventHandler):
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
-                            print(f"Created backup: {data_name}")
+                            print("Created backup")
                             
                             subprocess.run([
                                 "borg", "prune", "--status",
@@ -57,7 +57,6 @@ class LogHandler(FileSystemEventHandler):
                             break                           
                         else:
                             print("No player join/leave events detected in recent log lines.")
-                            break
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
