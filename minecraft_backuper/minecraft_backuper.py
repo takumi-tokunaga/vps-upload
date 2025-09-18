@@ -24,7 +24,8 @@ class LogHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.src_path.endswith("latest.log"):
             try:
-                with open(self.log_file, 'r') as file:
+                os.path.getsize(self.log_file)
+                with open(self.log_file, 'r', encoding='utf-8', errors='ignore') as file:
                     print("Log file modified, checking for player activity...")
                     print(f"opened file path: {self.log_file}")
                     lines = file.readlines()
