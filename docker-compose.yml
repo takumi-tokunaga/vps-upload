@@ -41,11 +41,15 @@ services:
     restart: unless-stopped
 
   mincraft_backuper:
-    build: mincraft_backuper/
-    container_name: mincraft_backuper
+    build: minecraft_backuper/
+    container_name: minecraft_backuper
     restart: unless-stopped
     environment:
-      - MINECRAFT_DATA_PATH=../../minecraft_data
+      - MINECRAFT_DATA_PATH=/data
+      - BORG_REPO_PATH=/app/repo
+    volumes:
+      - ./minecraft_backuper:/app
+      - ./minecraft-data:/data:ro
 
     # メモリ制限を設定
     mem_limit: 256m

@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "../../minecraft_data")
+MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "./data")
 LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
-BORG_REPO = MINECRAFT_DATA_BASE + "/repo"
+BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
 
 # /repoディレクトリがなければ作成
 if not os.path.exists(BORG_REPO):
