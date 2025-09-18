@@ -26,10 +26,11 @@ class LogHandler(FileSystemEventHandler):
             try:
                 with open(self.log_file, 'r') as file:
                     print("Log file modified, checking for player activity...")
-                    print(file)
+                    print(f"opened file path: {self.log_file}")
                     lines = file.readlines()
+                    print(f"readed lines: {lines}")
                     recent_lines = lines[-20:]
-                    print(self.log_file)
+                    print(f"recent lines: {recent_lines}")
                     for line in recent_lines:
                         print(f"Checking line: {line.strip()}")
                         if "joined the game" in line or "left the game" in line:
