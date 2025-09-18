@@ -10,6 +10,9 @@ LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = MINECRAFT_DATA_BASE + "/repo"
 
+# /repoディレクトリがなければ作成
+if not os.path.exists(BORG_REPO):
+    os.makedirs(BORG_REPO)
 
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
