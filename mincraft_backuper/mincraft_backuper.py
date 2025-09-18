@@ -13,6 +13,7 @@ BORG_REPO = MINECRAFT_DATA_BASE + "/repo"
 # /repoディレクトリがなければ作成
 if not os.path.exists(BORG_REPO):
     os.makedirs(BORG_REPO)
+    print(f"Created borg repository directory at {BORG_REPO}")
 
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
@@ -23,6 +24,7 @@ class LogHandler(FileSystemEventHandler):
         if event.src_path.endswith("latest.log"):
             try:
                 with open(self.log_file, 'r') as file:
+                    print("Log file modified, checking for player activity...")
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
@@ -30,7 +32,7 @@ class LogHandler(FileSystemEventHandler):
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
                             player_name = line.split(" ")[-3]
-                            data_name = f"{str(time.time())}_{player_name}_{event_type}"
+                            data_name = f"{timestamp}_{player_name}_{event_type}"
 
                             subprocess.run([
                                 "borg", "create", "--stats", "--compression", "lz4",
@@ -52,6 +54,7 @@ class LogHandler(FileSystemEventHandler):
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
+print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
 observer.schedule(LogHandler(LOG_PATH), path=LOG_PATH, recursive=False)
 observer.start()
