@@ -3,6 +3,8 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from dotenv import load_dotenv
 
+print("Starting Minecraft Backuper...")
+
 load_dotenv()
 
 MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "./data")
