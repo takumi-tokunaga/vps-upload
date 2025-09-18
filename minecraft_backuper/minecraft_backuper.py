@@ -33,7 +33,7 @@ class LogHandler(FileSystemEventHandler):
                     print(f"recent lines: {recent_lines}")
                     for line in recent_lines:
                         print(f"Checking line: {line.strip()}")
-                        if "joined the game" in line or "left the game" in line:
+                        if "joined the game" in line.strip() or "left the game" in line.strip():
                             print("Detected player activity")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
