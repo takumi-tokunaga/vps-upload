@@ -47,6 +47,7 @@ services:
     environment:
       - MINECRAFT_DATA_PATH=/data
       - BORG_REPO_PATH=/app/repo
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./minecraft_backuper:/app
       - ./minecraft-data:/data:ro
