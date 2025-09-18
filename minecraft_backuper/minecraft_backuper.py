@@ -54,6 +54,8 @@ class LogHandler(FileSystemEventHandler):
                                 ], check=True)
                             
                         break
+                    else:
+                        print("No player join/leave events detected in recent log lines.")
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
