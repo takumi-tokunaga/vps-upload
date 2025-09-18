@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 
 # ボットを起動
-CMD ["python", "mincraft_backuper.py"]
+CMD ["python", "minecraft_backuper.py"]
