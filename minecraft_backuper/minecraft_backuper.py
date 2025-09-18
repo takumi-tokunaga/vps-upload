@@ -43,6 +43,7 @@ class LogHandler(FileSystemEventHandler):
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
+        
                             print("Created backup")
                             
                             subprocess.run([
@@ -53,8 +54,7 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-daily=7",
                                 "--keep-weekly=4",
                                 "--keep-monthly=3"
-                                ], check=True)
-                            break                           
+                                ], check=True)                           
                         else:
                             print("No player join/leave events detected in recent log lines.")
             except Exception as e:
