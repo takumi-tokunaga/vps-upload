@@ -41,6 +41,7 @@ class LogHandler(FileSystemEventHandler):
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
+                            print(f"Created backup: {data_name}")
                             
                             subprocess.run([
                                 "borg", "prune", "--status",
