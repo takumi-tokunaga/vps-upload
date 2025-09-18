@@ -39,3 +39,21 @@ services:
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
+
+  mincraft_backuper:
+    build: mincraft_backuper/
+    container_name: mincraft_backuper
+    restart: unless-stopped
+    environment:
+      - MINECRAFT_DATA_PATH=../../minecraft_data
+
+    # メモリ制限を設定
+    mem_limit: 256m
+    # CPU制限を設定
+    cpus: 0.5
+    # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

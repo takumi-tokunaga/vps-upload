@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_SERVER_JAR", "../../minecraft_data")
-LOG_PATH = "/logs/latest.log"
-WORLD_PATH = "/world"
-BORG_REPO = "/repo"
+MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "../../minecraft_data")
+LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
+WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
+BORG_REPO = MINECRAFT_DATA_BASE + "/repo"
 
 
 class LogHandler(FileSystemEventHandler):
