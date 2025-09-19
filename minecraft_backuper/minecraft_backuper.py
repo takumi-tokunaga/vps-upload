@@ -20,14 +20,14 @@ if not os.path.exists(BORG_REPO):
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         self.log_file = log_file_path
+        print("Initialized LogHandler")
 
     def on_modified(self, event):
         if event.src_path.endswith("latest.log"):
             try:
-                os.path.getsize(self.log_file)
-                with open(self.log_file, 'r', encoding='utf-8', errors='ignore') as file:
+                with open(event.src_path, 'r', encoding='utf-8') as file:
                     print("Log file modified, checking for player activity...")
-                    print(f"opened file path: {self.log_file}")
+                    print(f"opened file path: {event.src_path}")
                     lines = file.readlines()
                     print(f"readed lines: {lines}")
                     recent_lines = lines[-20:]
@@ -57,9 +57,9 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-daily=7",
                                 "--keep-weekly=4",
                                 "--keep-monthly=3"
-                                ], check=True)                           
+                                ], check=True)
                         else:
-                            print("No player join/leave events detected in recent log lines.")
+                            print("log line does not indicate player activity")
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
@@ -67,9 +67,10 @@ class LogHandler(FileSystemEventHandler):
 # サーバーが起動してログファイルに内容が書き込まれるまで待機
 while not (os.path.exists(LOG_PATH) and os.path.getsize(LOG_PATH) > 0):
     print("Waiting for server to start and log file to be written...")
-    time.sleep(2)
+    time.sleep(5)
 
 print(f"Monitoring log file: {LOG_PATH}")
+
 observer = Observer()
 observer.schedule(LogHandler(LOG_PATH), path=LOG_PATH, recursive=False)
 observer.start()
@@ -80,4 +81,3 @@ try:
 except KeyboardInterrupt:
     observer.stop()
 observer.join()
-                            
