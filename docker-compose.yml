@@ -50,7 +50,7 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - ./minecraft_backuper:/app
-      - ./minecraft-data:/data:ro
+      - ./minecraft-data:/app/data:ro
 
     # メモリ制限を設定
     mem_limit: 256m
