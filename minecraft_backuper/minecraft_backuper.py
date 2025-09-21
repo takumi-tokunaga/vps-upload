@@ -30,10 +30,13 @@ class LogHandler(FileSystemEventHandler):
             ], check=True)
             print("Borgリポジトリの初期化を完了しました。")
         else:
+            """
             subprocess.run([
                 "borg", "config", BORG_REPO, "--append-only", "0"
             ], check=True)
+            """
             print("Borgリポジトリがすでに存在します。信用プロセスを完了しました。")
+                        
 
         print("LogHandlerの初期化を完了。")
 
