@@ -18,16 +18,14 @@ if not os.path.exists(BORG_REPO):
     print(f"Created borg repository directory at {BORG_REPO}")
 
 class LogHandler(FileSystemEventHandler):
-    def __init__(self, log_file_path):
-        self.log_file = log_file_path
+    def __init__(self):
         print("Initialized LogHandler")
 
     def on_modified(self, event):
         if event.src_path.endswith("latest.log"):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
-                    print(f"Log file: {event.src_path}, checking for player activity...")
-                    print(f"opened file path: {event.src_path}")
+                    print(f"modified file path: {event.src_path}")
                     lines = file.readlines()
                     print(f"readed lines: {lines}")
                     recent_lines = lines[-20:]
