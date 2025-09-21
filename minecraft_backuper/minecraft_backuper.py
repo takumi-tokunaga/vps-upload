@@ -32,7 +32,6 @@ class LogHandler(FileSystemEventHandler):
                     recent_lines = lines[-20:]
                     for line in recent_lines:
                         if "joined the game" in line.strip() or "left the game" in line.strip():
-                            print("Detected player activity")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
                             player_name = line.split(" ")[-3]
@@ -47,7 +46,7 @@ class LogHandler(FileSystemEventHandler):
                             print(f"Created backup: {data_name}")
 
                             subprocess.run([
-                                "borg", "prune", "--status",
+                                "borg", "prune",
                                 BORG_REPO,
                                 "--keep-within=24H",
                                 "--keep-hourly=72",
@@ -55,8 +54,6 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-weekly=4",
                                 "--keep-monthly=3"
                                 ], check=True)
-                        else:
-                            print("log line does not indicate player activity")
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
