@@ -48,11 +48,25 @@ class LogHandler(FileSystemEventHandler):
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
+
                         if line != self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
                             print(f"ユーザーのログインを検出しました")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
-                            player_name = line.split(" ")[-3]
+                            
+                            # プレイヤー名を正しく抽出
+                            parts = line.split(":")
+                            if len(parts) > 1:
+                                msg = parts[-1].strip()
+                                if "joined the game" in msg:
+                                    player_name = msg.replace("joined the game", "").strip()
+                                elif "left the game" in msg:
+                                    player_name = msg.replace("left the game", "").strip()
+                                else:
+                                    player_name = "unknown"
+                            else:
+                                player_name = "unknown"
+
                             data_name = f"{timestamp}_{player_name}_{event_type}"
 
                             subprocess.run([
@@ -73,6 +87,7 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-monthly=3"
                                 ], check=True)
                             print("古いバックアップの整理を完了しました。")
+                            
                             self.processed_line = line
                             
             except Exception as e:
