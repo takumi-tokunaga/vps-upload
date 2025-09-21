@@ -12,26 +12,33 @@ LOG_PATH = MINECRAFT_DATA_BASE + "/logs"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = os.environ.get("BORG_REPO_PATH", "app/repo")
 
-# /repoディレクトリがなければ作成
-if not os.path.exists(BORG_REPO):
-    os.makedirs(BORG_REPO)
-    print(f"Created borg repository directory at {BORG_REPO}")
-
 class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         super().__init__()
         self.log_file = log_file_path
+        self.processed_line = ""
+
+        # /repoディレクトリがなければ作成
+        if not os.path.exists(BORG_REPO):
+            os.makedirs(BORG_REPO)
+            print(f"Created borg repository directory at {BORG_REPO}")
+
+        # borgリポジトリの初期化または信用プロセス
         if not os.path.exists(os.path.join(BORG_REPO, 'config')):
             subprocess.run([
                 "borg", "init", "--encryption=none", BORG_REPO
             ], check=True)
             print("Borgリポジトリの初期化を完了しました。")
         else:
-            print("Borgリポジトリはすでに初期化されています。")
-        self.processed_line = ""
+            subprocess.run([
+                "borg", "config", BORG_REPO, "--append-only", "0"
+            ], check=True)
+            print("Borgリポジトリがすでに存在します。信用プロセスを完了しました。")
+
         print("LogHandlerの初期化を完了。")
 
-    def on_modified(self, event):
+
+    def on_modified(self, event): # 監視対象のファイルが変更されたときに呼ばれる
         if event.src_path.endswith("latest.log"):
             print(f"{event.src_path}の変更を検出しました。")
             try:
@@ -47,7 +54,8 @@ class LogHandler(FileSystemEventHandler):
                             data_name = f"{timestamp}_{player_name}_{event_type}"
 
                             subprocess.run([
-                                "borg", "create", "--stats", "--compression", "lz4",
+                                "borg", "create",
+                                "--stats", "--compression", "lz4",
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
