@@ -64,7 +64,7 @@ class LogHandler(FileSystemEventHandler):
 
 print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
-observer.schedule(LogHandler(LOG_PATH), path=os.path.dirname(LOG_PATH), recursive=False)
+observer.schedule(LogHandler, path=os.path.dirname(LOG_PATH), recursive=False)
 observer.start()
 
 try:
