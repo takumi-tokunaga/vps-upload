@@ -26,6 +26,7 @@ class LogHandler(FileSystemEventHandler):
             "--encryption=none",
             BORG_REPO
             ], check=True)
+        self.processed_line = ""
         print("LogHandlerの初期化を完了。")
 
     def on_modified(self, event):
@@ -34,9 +35,9 @@ class LogHandler(FileSystemEventHandler):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
                     lines = file.readlines()
-                    recent_lines = lines[-20:]
+                    recent_lines = lines[-10:]
                     for line in recent_lines:
-                        if "joined the game" in line.strip() or "left the game" in line.strip():
+                        if line != self.processed_lines and ("joined the game" in line.strip() or "left the game" in line.strip()):
                             print(f"ユーザーのログインを検出しました")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
@@ -60,6 +61,7 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-monthly=3"
                                 ], check=True)
                             print("古いバックアップの整理を完了しました。")
+                            self.processed_line = line
                             
             except Exception as e:
                 print(f"Error processing log file: {e}")
