@@ -25,8 +25,9 @@ class LogHandler(FileSystemEventHandler):
             subprocess.run([
                 "borg", "init", "--encryption=none", BORG_REPO
             ], check=True)
+            print("Borgリポジトリの初期化を完了しました。")
         else:
-            print("Borg repository already initialized.")
+            print("Borgリポジトリはすでに初期化されています。")
         self.processed_line = ""
         print("LogHandlerの初期化を完了。")
 
@@ -38,7 +39,7 @@ class LogHandler(FileSystemEventHandler):
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
-                        if line != self.processed_lines and ("joined the game" in line.strip() or "left the game" in line.strip()):
+                        if line != self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
                             print(f"ユーザーのログインを検出しました")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
