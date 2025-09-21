@@ -61,6 +61,8 @@ class LogHandler(FileSystemEventHandler):
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
+
+print(f"Monitoring log file: {LOG_PATH}")
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f"Waiting for log directory to be created: {os.path.dirname(LOG_PATH)}")
     time.sleep(3)

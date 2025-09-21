@@ -45,7 +45,7 @@ services:
     container_name: minecraft_backuper
     restart: unless-stopped
     environment:
-      - MINECRAFT_DATA_PATH=/data
+      - MINECRAFT_DATA_PATH=/app/data
       - BORG_REPO_PATH=/app/repo
       - PYTHONUNBUFFERED=1
     volumes:
