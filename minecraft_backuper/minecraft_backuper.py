@@ -79,7 +79,7 @@ while not os.path.exists(os.path.dirname(LOG_PATH)):
 
 print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
-observer.schedule(LogHandler(LOG_PATH), path=os.path.dirname(LOG_PATH), recursive=False)
+observer.schedule(LogHandler(LOG_PATH), path=LOG_PATH, recursive=False)
 observer.start()
 
 try:
