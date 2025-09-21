@@ -48,50 +48,50 @@ class LogHandler(FileSystemEventHandler):
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
-
                         if line != self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
                             print(f"ユーザーのログインを検出しました")
-                            timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-                            event_type = "login" if "joined the game" in line else "logout"
-                            
-                            # プレイヤー名を正しく抽出
-                            parts = line.split(":")
-                            if len(parts) > 1:
-                                msg = parts[-1].strip()
-                                if "joined the game" in msg:
-                                    player_name = msg.replace("joined the game", "").strip()
-                                elif "left the game" in msg:
-                                    player_name = msg.replace("left the game", "").strip()
-                                else:
-                                    player_name = "unknown"
-                            else:
-                                player_name = "unknown"
-
-                            data_name = f"{timestamp}_{player_name}_{event_type}"
-
-                            subprocess.run([
-                                "borg", "create",
-                                "--stats", "--compression", "lz4",
-                                f"{BORG_REPO}::{data_name}", WORLD_PATH,
-                                "--exclude", "session.lock"
-                                ])
-                            print(f"バックアップ：{data_name}を作成しました。")
-
-                            subprocess.run([
-                                "borg", "prune",
-                                BORG_REPO,
-                                "--keep-within=24H",
-                                "--keep-hourly=72",
-                                "--keep-daily=7",
-                                "--keep-weekly=4",
-                                "--keep-monthly=3"
-                                ], check=True)
-                            print("古いバックアップの整理を完了しました。")
-                            
-                            self.processed_line = line
-                            
+                            self.backup_world(line)
             except Exception as e:
                 print(f"Error processing log file: {e}")
+
+    def backup_world(self,line):
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        event_type = "login" if "joined the game" in line else "logout"
+
+        parts = line.split(":")
+        if len(parts) > 1:
+            msg = parts[-1].strip()
+            if "joined the game" in msg:
+                player_name = msg.replace("joined the game", "").strip()
+            elif "left the game" in msg:
+                player_name = msg.replace("left the game", "").strip()
+            else:
+                player_name = "unknown"
+        else:
+            player_name = "unknown"
+
+        data_name = f"{timestamp}_{player_name}_{event_type}"
+
+        subprocess.run([
+            "borg", "create",
+            "--stats", "--compression", "lz4",
+            f"{BORG_REPO}::{data_name}", WORLD_PATH,
+            "--exclude", "session.lock"
+            ], check=True)  
+        print(f"バックアップ：{data_name}を作成しました。")
+
+        subprocess.run([
+            "borg", "prune",
+            BORG_REPO,
+            "--keep-within=24H",
+            "--keep-hourly=72",
+            "--keep-daily=7",
+            "--keep-weekly=4",
+            "--keep-monthly=3"
+            ], check=True)
+        print("古いバックアップの整理を完了しました。")
+                            
+        self.processed_line = line
 
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f" {LOG_PATH}の作成を待機中...")
