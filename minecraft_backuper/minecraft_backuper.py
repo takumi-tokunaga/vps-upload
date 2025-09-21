@@ -8,7 +8,7 @@ print("Starting Minecraft Backuper...")
 load_dotenv()
 
 MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "./data")
-LOG_PATH = MINECRAFT_DATA_BASE + "/logs"
+LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
 
@@ -63,10 +63,10 @@ class LogHandler(FileSystemEventHandler):
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
-print(f"Monitoring log file: {LOG_PATH}")
 
+print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
-observer.schedule(LogHandler(LOG_PATH), path="/data/logs", recursive=False)
+observer.schedule(LogHandler(LOG_PATH), path=os.path.dirname(LOG_PATH), recursive=False)
 observer.start()
 
 try:
