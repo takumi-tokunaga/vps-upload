@@ -24,6 +24,7 @@ class LogHandler(FileSystemEventHandler):
         print("Initialized LogHandler")
 
     def on_modified(self, event):
+        print(f"Detected modification: {event.src_path}")
         if event.src_path.endswith("latest.log"):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
