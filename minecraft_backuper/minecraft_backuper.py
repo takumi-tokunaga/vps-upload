@@ -28,13 +28,9 @@ class LogHandler(FileSystemEventHandler):
         if event.src_path.endswith("latest.log"):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
-                    print(f"modified latest.log path: {event.src_path}")
                     lines = file.readlines()
-                    print(f"readed lines: {lines}")
                     recent_lines = lines[-20:]
-                    print(f"recent lines: {recent_lines}")
                     for line in recent_lines:
-                        print(f"Checking line: {line.strip()}")
                         if "joined the game" in line.strip() or "left the game" in line.strip():
                             print("Detected player activity")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -47,9 +43,9 @@ class LogHandler(FileSystemEventHandler):
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
-        
-                            print("Created backup")
-                            
+
+                            print(f"Created backup: {data_name}")
+
                             subprocess.run([
                                 "borg", "prune", "--status",
                                 BORG_REPO,
