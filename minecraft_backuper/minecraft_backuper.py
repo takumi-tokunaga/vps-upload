@@ -16,7 +16,7 @@ class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         super().__init__()
         self.log_file = log_file_path
-        self.processed_line = ""
+        self.processed_line = []
 
         # /repoディレクトリがなければ作成
         if not os.path.exists(BORG_REPO):
@@ -47,15 +47,18 @@ class LogHandler(FileSystemEventHandler):
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
-                        if line != self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
+                        if line not in self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
                             print(f"ユーザーの出入りを検出しました")
                             print(line)
                             self.backup_world(line)
-                            self.processed_line = line
+                            self.processed_line.append(line)
+                            if len(self.processed_line) > 10:
+                                self.processed_line.pop(0)
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
-    def backup_world(self,line):
+
+    def backup_world(self, line):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         event_type = "login" if "joined the game" in line else "logout"
 
@@ -73,24 +76,30 @@ class LogHandler(FileSystemEventHandler):
 
         data_name = f"{timestamp}_{player_name}_{event_type}"
 
-        subprocess.run([
-            "borg", "create",
-            "--stats", "--compression", "lz4",
-            f"{BORG_REPO}::{data_name}", WORLD_PATH,
-            "--exclude", "session.lock"
-            ], check=True)  
-        print(f"バックアップ：{data_name}を作成しました。")
+        try:
+            result = subprocess.run([
+                "borg", "create",
+                "--stats", "--compression", "lz4",
+                f"{BORG_REPO}::{data_name}", WORLD_PATH,
+                "--exclude", "session.lock"
+            ], check=True, capture_output=True, text=True)
+            print(f"バックアップ：{data_name}を作成しました。\n{result.stdout}")
+        except subprocess.CalledProcessError as e:
+            print(f"borg create error: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
 
-        subprocess.run([
-            "borg", "prune",
-            BORG_REPO,
-            "--keep-within=24H",
-            "--keep-hourly=72",
-            "--keep-daily=7",
-            "--keep-weekly=4",
-            "--keep-monthly=3"
-            ], check=True)
-        print("古いバックアップの整理を完了しました。")
+        try:
+            result = subprocess.run([
+                "borg", "prune",
+                BORG_REPO,
+                "--keep-within=24H",
+                "--keep-hourly=72",
+                "--keep-daily=7",
+                "--keep-weekly=4",
+                "--keep-monthly=3"
+            ], check=True, capture_output=True, text=True)
+            print(f"古いバックアップの整理を完了しました。\n{result.stdout}")
+        except subprocess.CalledProcessError as e:
+            print(f"borg prune error: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
 
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f" {LOG_PATH}の作成を待機中...")
