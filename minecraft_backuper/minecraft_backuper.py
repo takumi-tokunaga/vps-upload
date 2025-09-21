@@ -19,6 +19,7 @@ if not os.path.exists(BORG_REPO):
 
 class LogHandler(FileSystemEventHandler):
     def __init__(self):
+        super().__init__()
         print("Initialized LogHandler")
 
     def on_modified(self, event):
@@ -61,8 +62,6 @@ class LogHandler(FileSystemEventHandler):
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
-
-print(f"Monitoring log file: {LOG_PATH}")
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f"Waiting for log directory to be created: {os.path.dirname(LOG_PATH)}")
     time.sleep(3)
