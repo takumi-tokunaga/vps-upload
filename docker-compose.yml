@@ -48,6 +48,7 @@ services:
       - MINECRAFT_DATA_PATH=/app/data
       - BORG_REPO_PATH=/app/repo
       - PYTHONUNBUFFERED=1
+      - BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
     volumes:
       - ./minecraft_backuper:/app
       - ./minecraft-data:/app/data:ro

@@ -57,7 +57,6 @@ class LogHandler(FileSystemEventHandler):
 
                             subprocess.run([
                                 "borg", "create",
-                                "--yes",
                                 "--stats", "--compression", "lz4",
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
@@ -66,7 +65,6 @@ class LogHandler(FileSystemEventHandler):
 
                             subprocess.run([
                                 "borg", "prune",
-                                "--yes", 
                                 BORG_REPO,
                                 "--keep-within=24H",
                                 "--keep-hourly=72",
