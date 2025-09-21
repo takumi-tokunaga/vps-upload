@@ -8,7 +8,7 @@ print("Starting Minecraft Backuper...")
 load_dotenv()
 
 MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "./data")
-LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
+LOG_PATH = MINECRAFT_DATA_BASE + "/logs"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
 
@@ -26,7 +26,7 @@ class LogHandler(FileSystemEventHandler):
         if event.src_path.endswith("latest.log"):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
-                    print("Log file modified, checking for player activity...")
+                    print(f"Log file: {event.src_path}, checking for player activity...")
                     print(f"opened file path: {event.src_path}")
                     lines = file.readlines()
                     print(f"readed lines: {lines}")
@@ -62,12 +62,6 @@ class LogHandler(FileSystemEventHandler):
                             print("log line does not indicate player activity")
             except Exception as e:
                 print(f"Error processing log file: {e}")
-
-
-# サーバーが起動してログファイルに内容が書き込まれるまで待機
-while not (os.path.exists(LOG_PATH) and os.path.getsize(LOG_PATH) > 0):
-    print("Waiting for server to start and log file to be written...")
-    time.sleep(5)
 
 print(f"Monitoring log file: {LOG_PATH}")
 
