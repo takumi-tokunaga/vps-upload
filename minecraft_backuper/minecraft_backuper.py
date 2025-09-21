@@ -23,16 +23,7 @@ class LogHandler(FileSystemEventHandler):
         self.log_file = log_file_path
         print("Initialized LogHandler")
 
-    def on_created(self, event):
-        print(f"Detected creation: {event.src_path}")
-        self.backup_world(event)
-
     def on_modified(self, event):
-        print(f"Detected modification: {event.src_path}")
-        self.backup_world(event)
-    
-    
-    def backup_world(self, event):
         print(f"Processing event for: {event.src_path}")
         if event.src_path.endswith("latest.log"):
             try:
