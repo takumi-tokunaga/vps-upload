@@ -7,7 +7,7 @@ print("Starting Minecraft Backuper...")
 
 load_dotenv()
 
-MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "./data")
+MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "app/data")
 LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
