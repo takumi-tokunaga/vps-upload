@@ -21,11 +21,12 @@ class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         super().__init__()
         self.log_file = log_file_path
-        subprocess.run([
-            "borg", "init",
-            "--encryption=none",
-            BORG_REPO
+        if not os.path.exists(os.path.join(BORG_REPO, 'config')):
+            subprocess.run([
+                "borg", "init", "--encryption=none", BORG_REPO
             ], check=True)
+        else:
+            print("Borg repository already initialized.")
         self.processed_line = ""
         print("LogHandlerの初期化を完了。")
 
