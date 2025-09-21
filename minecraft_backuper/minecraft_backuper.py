@@ -18,8 +18,9 @@ if not os.path.exists(BORG_REPO):
     print(f"Created borg repository directory at {BORG_REPO}")
 
 class LogHandler(FileSystemEventHandler):
-    def __init__(self):
+    def __init__(self, log_file_path):
         super().__init__()
+        self.log_file = log_file_path
         print("Initialized LogHandler")
 
     def on_modified(self, event):
@@ -68,7 +69,7 @@ while not os.path.exists(os.path.dirname(LOG_PATH)):
 
 print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
-observer.schedule(LogHandler, path=os.path.dirname(LOG_PATH), recursive=False)
+observer.schedule(LogHandler(LOG_PATH), path=os.path.dirname(LOG_PATH), recursive=False)
 observer.start()
 
 try:
