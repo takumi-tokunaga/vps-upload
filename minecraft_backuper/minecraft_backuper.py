@@ -3,7 +3,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from dotenv import load_dotenv
 
-print("Starting Minecraft Backuper...")
+print("Minecraft Backuperを開始します...")
 
 load_dotenv()
 
@@ -21,10 +21,10 @@ class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         super().__init__()
         self.log_file = log_file_path
-        print("Initialized LogHandler")
+        print("LogHandlerの初期化を完了。")
 
     def on_modified(self, event):
-        print(f"Processing event for: {event.src_path}")
+        print(f"{event.src_path}の変更を検出しました。")
         if event.src_path.endswith("latest.log"):
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
@@ -42,8 +42,7 @@ class LogHandler(FileSystemEventHandler):
                                 f"{BORG_REPO}::{data_name}", WORLD_PATH,
                                 "--exclude", "session.lock"
                                 ])
-
-                            print(f"Created backup: {data_name}")
+                            print(f"バックアップ：{data_name}を作成しました。")
 
                             subprocess.run([
                                 "borg", "prune",
@@ -54,17 +53,20 @@ class LogHandler(FileSystemEventHandler):
                                 "--keep-weekly=4",
                                 "--keep-monthly=3"
                                 ], check=True)
+                            print("古いバックアップの整理を完了しました。")
+                            
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
 while not os.path.exists(os.path.dirname(LOG_PATH)):
-    print(f"Waiting for log directory to be created: {os.path.dirname(LOG_PATH)}")
+    print(f" {LOG_PATH}の作成を待機中...")
     time.sleep(3)
 
-print(f"Monitoring log file: {LOG_PATH}")
+print(f"{LOG_PATH}の監視を開始します。")
 observer = Observer()
 observer.schedule(LogHandler(LOG_PATH), path=LOG_PATH, recursive=False)
 observer.start()
+print(f"{LOG_PATH}の監視を開始しました。")
 
 try:
     while True:
