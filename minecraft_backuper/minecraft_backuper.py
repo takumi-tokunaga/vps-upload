@@ -10,7 +10,7 @@ load_dotenv()
 MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "app/data")
 LOG_PATH = MINECRAFT_DATA_BASE + "/logs"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
-BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
+BORG_REPO = os.environ.get("BORG_REPO_PATH", "app/repo")
 
 # /repoディレクトリがなければ作成
 if not os.path.exists(BORG_REPO):
@@ -21,17 +21,23 @@ class LogHandler(FileSystemEventHandler):
     def __init__(self, log_file_path):
         super().__init__()
         self.log_file = log_file_path
+        subprocess.run([
+            "borg", "init",
+            "--encryption=none",
+            BORG_REPO
+            ], check=True)
         print("LogHandlerの初期化を完了。")
 
     def on_modified(self, event):
-        print(f"{event.src_path}の変更を検出しました。")
         if event.src_path.endswith("latest.log"):
+            print(f"{event.src_path}の変更を検出しました。")
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
                     lines = file.readlines()
                     recent_lines = lines[-20:]
                     for line in recent_lines:
                         if "joined the game" in line.strip() or "left the game" in line.strip():
+                            print(f"ユーザーのログインを検出しました")
                             timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                             event_type = "login" if "joined the game" in line else "logout"
                             player_name = line.split(" ")[-3]
