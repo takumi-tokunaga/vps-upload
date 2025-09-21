@@ -42,15 +42,16 @@ class LogHandler(FileSystemEventHandler):
 
     def on_modified(self, event): # 監視対象のファイルが変更されたときに呼ばれる
         if event.src_path.endswith("latest.log"):
-            print(f"{event.src_path}の変更を検出しました。")
             try:
                 with open(event.src_path, 'r', encoding='utf-8') as file:
                     lines = file.readlines()
                     recent_lines = lines[-10:]
                     for line in recent_lines:
                         if line != self.processed_line and ("joined the game" in line.strip() or "left the game" in line.strip()):
-                            print(f"ユーザーのログインを検出しました")
+                            print(f"ユーザーの出入りを検出しました")
+                            print(line)
                             self.backup_world(line)
+                            self.processed_line = line
             except Exception as e:
                 print(f"Error processing log file: {e}")
 
@@ -90,8 +91,6 @@ class LogHandler(FileSystemEventHandler):
             "--keep-monthly=3"
             ], check=True)
         print("古いバックアップの整理を完了しました。")
-                            
-        self.processed_line = line
 
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f" {LOG_PATH}の作成を待機中...")
