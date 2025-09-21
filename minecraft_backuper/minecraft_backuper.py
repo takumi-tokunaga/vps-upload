@@ -8,7 +8,7 @@ print("Starting Minecraft Backuper...")
 load_dotenv()
 
 MINECRAFT_DATA_BASE = os.environ.get("MINECRAFT_DATA_PATH", "app/data")
-LOG_PATH = MINECRAFT_DATA_BASE + "/logs/latest.log"
+LOG_PATH = MINECRAFT_DATA_BASE + "/logs"
 WORLD_PATH = MINECRAFT_DATA_BASE + "/world"
 BORG_REPO = os.environ.get("BORG_REPO_PATH", "./repo")
 
@@ -63,7 +63,7 @@ class LogHandler(FileSystemEventHandler):
 
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f"Waiting for log directory to be created: {os.path.dirname(LOG_PATH)}")
-    time.sleep(1)
+    time.sleep(3)
 
 print(f"Monitoring log file: {LOG_PATH}")
 observer = Observer()
