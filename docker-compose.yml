@@ -15,9 +15,9 @@ services:
       # 認証情報のマウント
       - ./ReactlessBuster2/credentials:/app/credentials:ro
     # メモリ制限を設定
-    mem_limit: 512m
+    mem_limit: 256m
     # CPU制限を設定
-    cpus: 0.5
+    cpus: 0.3
     # ログ設定
     logging:
       driver: "json-file"
@@ -35,7 +35,7 @@ services:
       EULA: "TRUE"
       TYPE: "NEOFORGE"
       VERSION: "1.21.8"
-      MEMORY: "3G"
+      MEMORY: "3.5G"
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
@@ -52,12 +52,31 @@ services:
     volumes:
       - ./minecraft_backuper:/app
       - ./minecraft-data:/app/data:ro
-
     # メモリ制限を設定
     mem_limit: 256m
     # CPU制限を設定
-    cpus: 0.5
+    cpus: 0.3
     # ログ設定
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  sugercraft:
+    build: ./sugercraft
+    container_name: sugercraft
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sugercraft:/app
+    working_dir: /app
+    command: uvicorn sugercraft.asgi:application --host 0.0.0.0 --port 8000
+    mem_limit: 256m
+    cpus: 0.3
     logging:
       driver: "json-file"
       options:
