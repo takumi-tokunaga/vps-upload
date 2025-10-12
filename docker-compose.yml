@@ -35,10 +35,11 @@ services:
       EULA: "TRUE"
       TYPE: "NEOFORGE"
       VERSION: "1.21.8"
-      MEMORY: "3.5G"
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
+    # メモリ制限を設定
+    mem_limit: 3.5g
 
   minecraft_backuper:
     build: minecraft_backuper/
