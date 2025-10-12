@@ -1,0 +1,152 @@
+<!-- participants/templates/participants/list.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Suger Craft WEB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h1 class="mb-4 text-center">接続中 <span id="online-count">0</span>人</h1>
+    <h1 class="mb-4 text-center">オンラインメンバー</h1>
+    <div class="row" id="online-participants">
+        <!-- オンライン参加者がここに動的に表示される -->
+    </div>
+
+    <h1 class="mb-4 text-center">オフラインメンバー</h1>
+    <div class="row" id="offline-participants">
+        <!-- オフライン参加者がここに動的に表示される -->
+    </div>
+</div>
+
+<script>
+const ws = new WebSocket('ws://localhost:8000/ws/participants/');
+
+ws.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    // オンライン参加者を更新
+    updateParticipants('online-participants', data.online_participants);
+    document.getElementById('online-count').textContent = data.online_participants.length;
+    // オフライン参加者を更新
+    updateParticipants('offline-participants', data.offline_participants);
+    // 参加者データを保存（モーダル用）
+    window.lastParticipantsData = { online: data.online_participants, offline: data.offline_participants };
+};
+
+function updateParticipants(containerId, participants) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    
+    participants.forEach(participant => {
+        const card = `
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <img src="https://crafatar.com/avatars/${participant.uuid}?size=100" alt="スキン" class="img-thumbnail ms-2" style="width: 50px; height: 50px;">
+                                <h5 class="card-title mb-0">${participant.name}</h5>
+                            </div>
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#participantModal"
+                                data-name="${participant.name}"
+                                data-game_id="${participant.game_id}"
+                                data-uuid="${participant.uuid}"
+                                data-bio="${participant.bio ? participant.bio.replace(/"/g, '&quot;').replace(/\n/g, '&#10;') : ''}">
+                                詳細
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
+}
+
+// 共通モーダル
+document.body.insertAdjacentHTML('beforeend', `
+<div class="modal fade" id="participantModal" tabindex="-1" aria-labelledby="participantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p id="modalName"></p>
+                <p id="modalGameId"></p>
+                <p>【自己紹介】</p>
+                <p id="modalBio"></p>
+                <img id="modalSkin" src="" alt="スキン" class="img-thumbnail">
+                <div id="modalSNSLinks" class="mt-3"></div>
+                <div id="modalStreamLinks" class="mt-3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+`);
+
+document.addEventListener('show.bs.modal', function (event) {
+    if (event.target.id === 'participantModal') {
+        var button = event.relatedTarget;
+        var name = button.getAttribute('data-name');
+        var gameid = button.getAttribute('data-game_id');
+        var uuid = button.getAttribute('data-uuid');
+        var bio = button.getAttribute('data-bio');
+        var modalBio = document.getElementById('modalBio');
+        if (bio) {
+            // どちらの改行も<br>に変換してHTMLとして表示
+            modalBio.innerHTML = bio.replace(/&#10;|\n/g, '<br>');
+        } else {
+            modalBio.textContent = '自己紹介はありません。';
+        }
+        document.getElementById('modalName').textContent = '【名前】 ' + name;
+        document.getElementById('modalGameId').textContent = '【ゲームID】 ' + gameid;
+        if (uuid && uuid !== '') {
+            document.getElementById('modalSkin').src = 'https://crafatar.com/renders/body/' + uuid + '?size=256&scale=7&default_armor_stand=false';
+        } else {
+            document.getElementById('modalSkin').src = '';
+        }
+        // SNS/Streamリンク表示
+        var allParticipants = [];
+        if (window.lastParticipantsData) {
+            allParticipants = window.lastParticipantsData.online.concat(window.lastParticipantsData.offline);
+        }
+        var participant = allParticipants.find(p => p.game_id === gameid);
+        // SNSリンク
+        var snsLinksDiv = document.getElementById('modalSNSLinks');
+        if (participant && participant.sns_links && participant.sns_links.length > 0) {
+            snsLinksDiv.innerHTML = '<strong>【SNSリンク】</strong><ul>' +
+                participant.sns_links.map(link => `<li><a href="${link.url}" target="_blank">${link.platform}</a></li>`).join('') + '</ul>';
+        } else {
+            snsLinksDiv.innerHTML = '';
+        }
+        // Streamリンク
+        var streamLinksDiv = document.getElementById('modalStreamLinks');
+        if (participant && participant.stream_links && participant.stream_links.length > 0) {
+            streamLinksDiv.innerHTML = '<strong>【配信リンク】</strong><ul>' +
+                participant.stream_links.map(link => `<li><a href="${link.url}" target="_blank">${link.platform}</a></li>`).join('') + '</ul>';
+        } else {
+            streamLinksDiv.innerHTML = '';
+        }
+    }
+});
+
+// 3秒ごとにサーバー状態を確認
+setInterval(() => {
+        ws.send('get_status');
+}, 3000);
+
+ws.onopen = function(event) {
+    console.log('WebSocket接続が開かれました');
+    ws.send('get_status');
+};
+
+ws.onerror = function(error) {
+    console.log('WebSocketエラー:', error);
+};
+</script>
+</body>
+</html>
