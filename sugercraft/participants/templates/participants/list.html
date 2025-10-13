@@ -23,9 +23,11 @@
 </div>
 
 <script>
-const ws = new WebSocket('ws://localhost:8000/ws/participants/');
+const ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+const ws_url = ws_scheme + "://" + window.location.host + "/ws/participants/";
+const socket = new WebSocket(ws_url);
 
-ws.onmessage = function(event) {
+socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
     // オンライン参加者を更新
     updateParticipants('online-participants', data.online_participants);
