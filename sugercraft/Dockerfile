@@ -9,5 +9,5 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 
-# ボットを起動
-CMD ["uvicorn", "sugercraft.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+# ASGIサーバー（daphne）で起動
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "sugercraft.asgi:application"]
