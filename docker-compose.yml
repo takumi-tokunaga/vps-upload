@@ -35,6 +35,7 @@ services:
       EULA: "TRUE"
       TYPE: "NEOFORGE"
       VERSION: "1.21.8"
+      NEOFORGE_VERSION: "21.8.31"
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
