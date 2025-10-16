@@ -84,3 +84,14 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+  glances:
+    image: nicolargo/glances:latest-full
+    container_name: glances
+    restart: unless-stopped
+    ports:
+      - "61208:61208"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: glances -w
+    mem_limit: 256m 
