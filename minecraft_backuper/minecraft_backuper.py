@@ -91,8 +91,7 @@ class LogHandler(FileSystemEventHandler):
             result = subprocess.run([
                 "borg", "prune",
                 BORG_REPO,
-                "--keep-within=24H",
-                "--keep-hourly=72",
+                "--keep-hourly=24",
                 "--keep-daily=7",
                 "--keep-weekly=4",
                 "--keep-monthly=3"
