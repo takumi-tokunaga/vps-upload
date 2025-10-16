@@ -100,6 +100,15 @@ class LogHandler(FileSystemEventHandler):
         except subprocess.CalledProcessError as e:
             print(f"borg prune error: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
 
+        try:
+            result = subprocess.run([
+                "borg", "compact",
+                BORG_REPO
+            ], check=True, capture_output=True, text=True)
+            print(f"リポジトリの圧縮を完了しました。\n{result.stdout}")
+        except subprocess.CalledProcessError as e:
+            print(f"borg compact error: {e}\nstdout: {e.stdout}\nstderr: {e.stderr}")
+
 while not os.path.exists(os.path.dirname(LOG_PATH)):
     print(f" {LOG_PATH}の作成を待機中...")
     time.sleep(3)
