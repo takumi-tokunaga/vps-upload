@@ -36,10 +36,11 @@ services:
       TYPE: "NEOFORGE"
       VERSION: "1.21.8"
       NEOFORGE_VERSION: "21.8.31"
+      MEMORY: "3G"
+      JVM_OPTS: "-Xmx3G -Xms2G"
     volumes:
       - ./minecraft-data:/data
     restart: unless-stopped
-    # メモリ制限を設定
     mem_limit: 3.5g
 
   minecraft_backuper:
@@ -84,7 +85,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
   glances:
     image: nicolargo/glances:latest-full
     container_name: glances
